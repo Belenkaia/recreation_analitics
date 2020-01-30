@@ -1,6 +1,5 @@
 import random
 from datetime import datetime, timedelta
-import math
 from scheduleHelper import ScheduleHelper
 from MapTableReader import get_map_dictionary
 import pandas as pd
@@ -8,8 +7,19 @@ import pandas as pd
 
 class DatasetHelper:
     def __init__(self):
-        self.map_dict = get_map_dictionary()
         self.schedule = ScheduleHelper()
+        raw_map_dict = get_map_dictionary()
+        # filter zones with no classes
+        self.map_list = []
+        for key in raw_map_dict:
+            if self.check_zone(raw_map_dict[key]):
+                self.map_list.append(raw_map_dict[key])
+
+    def check_zone(self, zone):
+        for room in zone['classrooms']:
+            if self.schedule.get_classes_count(room['id']) > 0:
+                return True
+        return False
 
     def Calculate_coefficient(self, current_time, classrooms_objets, near_time_delta):
         classrooms_coeff = 1
@@ -25,14 +35,14 @@ class DatasetHelper:
         return datetime.strptime(time_str, '%d %m %Y %z %H:%M')
 
     def get_random_zone(self):
-        last_zone_ind = len(self.map_dict) - 1
-        zone_keys = list(self.map_dict.keys())
-        rand_zone_id = zone_keys[random.randint(0, last_zone_ind)]
-        return self.map_dict[rand_zone_id]
+        return self.map_list[random.randint(0, len(self.map_list) - 1)]
 
-    # 1 - zone don't have enough classes, 2 - time is bad
-    def check_zone_occ(self, rand_zone, rand_time):
-        
+    # None - zone don't have enough classes
+    def get_random_class_time(self, rand_zone):
+        for room in rand_zone['classrooms']:
+            if self.schedule.get_classes_count(room['id']) > 0:
+                return self.schedule.get_random_class(room['id'])
+        return None
 
     def generate_random_dataset(self):
         dataset_dict = {
@@ -48,8 +58,15 @@ class DatasetHelper:
         random.seed(datetime.now().microsecond)
         near_time_delta = timedelta(minutes=25)
         for i in range(data_entries):
-            entry_time = self.get_random_date()
+            is_data_good = False
             rand_zone = self.get_random_zone()
+            entry_time = None
+            while not is_data_good:
+                entry_time = self.get_random_class_time(rand_zone)
+                if entry_time == None:
+                    rand_zone = self.get_random_zone()
+                else:
+                    is_data_good = True
 
             dataset_dict['traffic'].append(rand_zone['traffic'])
             dataset_dict['size'].append(rand_zone['size'])
