@@ -4,7 +4,6 @@ import math
 from scheduleHelper import ScheduleHelper
 from MapTableReader import get_map_dictionary
 import pandas as pd
-from scheduleAPI import get_groups_schedule
 
 
 def Calculate_coefficient(schedule, classrooms_objets, near_time_delta):

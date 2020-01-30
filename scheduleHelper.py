@@ -1,8 +1,6 @@
 import json
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 import pytz
-import pandas as pd
-import random
 
 
 class ScheduleHelper:
