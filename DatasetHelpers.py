@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from scheduleHelper import ScheduleHelper
 from MapTableReader import get_map_dictionary
 import pandas as pd
+from model_constants import const
 
 
 class DatasetHelper:
@@ -45,14 +46,14 @@ class DatasetHelper:
         return None
 
     def generate_random_dataset(self):
-        dataset_dict = {
-            'traffic': [],
-            'class_coeff': [],
-            'size': [],
-            'sockets_size': [],
-            'popularity': [],
-            'currentOccupancy': []
-        }
+        dataset_dict = {}
+        dataset_dict[const.traffic_col] = []
+        dataset_dict[const.class_col] = []
+        dataset_dict[const.size_col] = []
+        dataset_dict[const.sockets_col] = []
+        dataset_dict[const.popularity_col] = []
+        dataset_dict[const.occupancy_col] = []
+
         data_entries = 1000
         # Generate random dataset
         random.seed(datetime.now().microsecond)
@@ -68,11 +69,37 @@ class DatasetHelper:
                 else:
                     is_data_good = True
 
-            dataset_dict['traffic'].append(rand_zone['traffic'])
-            dataset_dict['size'].append(rand_zone['size'])
-            dataset_dict['sockets_size'].append(rand_zone['powerSockets'])
-            dataset_dict['popularity'].append(rand_zone['popularity'])
-            dataset_dict['class_coeff'].append(self.Calculate_coefficient(entry_time, rand_zone['classrooms'], near_time_delta))
-            dataset_dict['currentOccupancy'].append(random.randint(0, int(rand_zone['size'] * 1.5)) / rand_zone['size'])
+            dataset_dict[const.traffic_col].append(rand_zone['traffic'])
+            dataset_dict[const.size_col].append(rand_zone['size'])
+            dataset_dict[const.sockets_col].append(rand_zone['powerSockets'])
+            dataset_dict[const.popularity_col].append(rand_zone['popularity'])
+            dataset_dict[const.class_col].append(self.Calculate_coefficient(entry_time, rand_zone['classrooms'], near_time_delta))
+            dataset_dict[const.occupancy_col].append(random.randint(0, int(rand_zone['size'] * 1.5)) / rand_zone['size'])
 
-        pd.DataFrame(dataset_dict).to_csv(r'C:\Users\user\Desktop\recreation_analitics\dataset.csv', index=False)
+        self.rand_dataset_df = pd.DataFrame(dataset_dict)
+        self.rand_dataset_df.to_csv(r'C:\Users\user\Desktop\recreation_analitics\dataset.csv', index=False)
+
+
+    def add_label_col(self, row):
+        features_summ = row[const.traffic_col] * const.traffic_importance
+        features_summ += row[const.size_col] * const.size_importance
+        features_summ += row[const.class_col] * const.class_importance
+        features_summ += row[const.popularity_col] * const.popularity_importance
+        features_summ += row[const.occupancy_col] * const.occupancy_importance
+        features_summ += row[const.sockets_col] * const.sockets_importance
+
+        if features_summ < 30:
+            row['label'] = const.five_min_class
+        elif features_summ < 60:
+            row['label'] = const.fiveteen_min_class
+        elif features_summ < 80:
+            row['label'] = const.thirty_min_class
+        else:
+            row['label'] = const.hour_min_class
+        return row
+
+    def generate_dataset_labels(self):
+        self.rand_dataset_df = pd.read_csv(r'C:\Users\user\Desktop\recreation_analitics\dataset.csv')
+        self.rand_dataset_df = self.rand_dataset_df.apply(self.add_label_col, axis=1)
+        del self.rand_dataset_df['summ']
+        self.rand_dataset_df.to_csv(r'C:\Users\user\Desktop\recreation_analitics\dataset.csv', index=False)
