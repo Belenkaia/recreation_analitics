@@ -33,6 +33,7 @@ class ScheduleHelper:
         if week_num % 2 == 0:
             return check_weekday
         else:
+            # There is sunday for the odd weeks, but not for the even weeks
             if check_weekday == 7:
                 return 7
             return check_weekday + 7
@@ -43,6 +44,6 @@ class ScheduleHelper:
         classes = self.schedule_dict[classroom_id][weekday]
         for class_num in classes:
             start_time = self.start_times[int(class_num) - 1]
-            # if start_time <= check_time <= start_time + self.classes_length:
-            #     return True
+            if start_time <= check_time <= start_time + self.classes_length:
+                return True
         return False
