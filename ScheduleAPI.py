@@ -24,7 +24,7 @@ class ScheduleAPI:
         }
         for room in self.rooms:
             schedule_dict[str(room)] = {}
-            for i in range(1, 13):
+            for i in range(1, 14):
                 schedule_dict[str(room)][str(i)] = []
         return schedule_dict
 
