@@ -77,7 +77,7 @@ class DatasetHelper:
             dataset_dict[const.occupancy_col].append(random.randint(0, int(rand_zone['size'] * 1.5)) / rand_zone['size'])
 
         self.rand_dataset_df = pd.DataFrame(dataset_dict)
-        self.rand_dataset_df.to_csv(r'C:\Users\user\Desktop\recreation_analitics\dataset.csv', index=False)
+        self.rand_dataset_df.to_csv(const.dataset_path, index=False)
 
 
     def add_label_col(self, row):
@@ -99,7 +99,7 @@ class DatasetHelper:
         return row
 
     def generate_dataset_labels(self):
-        self.rand_dataset_df = pd.read_csv(r'C:\Users\user\Desktop\recreation_analitics\dataset.csv')
+        self.rand_dataset_df = pd.read_csv(const.dataset_path)
         self.rand_dataset_df = self.rand_dataset_df.apply(self.add_label_col, axis=1)
         del self.rand_dataset_df['summ']
-        self.rand_dataset_df.to_csv(r'C:\Users\user\Desktop\recreation_analitics\dataset.csv', index=False)
+        self.rand_dataset_df.to_csv(const.dataset_path, index=False)

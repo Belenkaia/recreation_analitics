@@ -19,4 +19,7 @@ class constants:
         self.thirty_min_class = 3
         self.hour_min_class = 4
 
+        self.dataset_path = r'C:\Users\user\Desktop\recreation_analitics\dataset.csv'
+        self.model_path = r'C:\Users\user\Desktop\recreation_analitics\prediction_model.cbm'
+
 const = constants()

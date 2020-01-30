@@ -1,5 +1,4 @@
-from DatasetHelpers import DatasetHelper
+from GenerateModel import Prediction_model
 
-
-# DatasetHelper().generate_random_dataset()
-DatasetHelper().generate_dataset_labels()
+model = Prediction_model()
+model.generate_new_model()
