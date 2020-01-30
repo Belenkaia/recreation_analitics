@@ -18,6 +18,7 @@ class ScheduleAPI:
 
     def get_base_schedule_dict(self):
         schedule_dict = {
+            "semestr_start_date": "01/09/2019+0700",
             "total_classes": 7,
             "classes_length": "1:35",
             "classes_start_time": ["9:00", "10:50", "12:40", "14:30", "16:20", "18:10", "20:00"],
