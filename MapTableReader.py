@@ -27,11 +27,10 @@ def get_map_dictionary():
             distances = str(row[classroom_distances]).split(',')
             for classroom in zip(classroom_ids, distances):
                 new_zone['classrooms'].append({
-                    'id': classroom[0],
-                    'distance': classroom[1]
+                    'id': classroom[0].strip(),
+                    'distance': classroom[1].strip()
                 })
             map_dict[row[zone_id]] = new_zone
         except KeyError as err:
             print(err)
     return map_dict
-
