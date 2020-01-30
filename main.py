@@ -1,5 +1,5 @@
-from DatasetHelpers import generate_random_dataset
+from DatasetHelpers import DatasetHelper
 
 
-generate_random_dataset()
-
+# DatasetHelper().generate_random_dataset()
+DatasetHelper().generate_dataset_labels()

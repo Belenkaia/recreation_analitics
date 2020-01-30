@@ -1,5 +1,5 @@
 import pandas as pd
-import pandas.errors
+
 
 def get_map_dictionary():
     zone_id = '№ зоны'
@@ -9,6 +9,7 @@ def get_map_dictionary():
     power_sockets_amount = 'Кол-во розеток'
     classrooms = 'Аудитории'
     classroom_distances = 'Дистанция до аудитории'
+    popularity = 'популярность'
     map_df = pd.read_csv('mapTable.tsv', sep='\t')
 
     map_df[table_space_amount] = map_df[table_space_amount].fillna(0)
@@ -21,7 +22,7 @@ def get_map_dictionary():
             new_zone['size'] = row[chair_space_amount] + row[table_space_amount]
             new_zone['powerSockets'] = row[power_sockets_amount]
             new_zone['traffic'] = row[average_trafic]
-            new_zone['popularity'] = 0
+            new_zone['popularity'] = row[popularity]
             new_zone['classrooms'] = []
             classroom_ids = str(row[classrooms]).split(',')
             distances = str(row[classroom_distances]).split(',')
