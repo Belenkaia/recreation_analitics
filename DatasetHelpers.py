@@ -45,14 +45,10 @@ class DatasetHelper:
                 return self.schedule.get_random_class(room['id'])
         return None
 
-    def generate_random_dataset(self, out_path, data_entries):
+    def generate_random_dataset(self, data_entries):
         dataset_dict = {}
-        dataset_dict[const.traffic_col] = []
-        dataset_dict[const.class_col] = []
-        dataset_dict[const.size_col] = []
-        dataset_dict[const.sockets_col] = []
-        dataset_dict[const.popularity_col] = []
-        dataset_dict[const.occupancy_col] = []
+        for col in const.dataset_header:
+            dataset_dict[col] = []
 
         # Generate random dataset
         random.seed(datetime.now().microsecond)
@@ -74,30 +70,19 @@ class DatasetHelper:
             dataset_dict[const.popularity_col].append(rand_zone['popularity'])
             dataset_dict[const.class_col].append(self.Calculate_coefficient(entry_time, rand_zone['classrooms'], near_time_delta))
             dataset_dict[const.occupancy_col].append(random.randint(0, int(rand_zone['size'] * 1.5)) / rand_zone['size'])
+            dataset_dict[const.power_occupancy_col].append(random.randint(0, rand_zone['powerSockets']))
 
         self.rand_dataset_df = pd.DataFrame(dataset_dict)
-        self.rand_dataset_df.to_csv(out_path, index=False)
-
+        self.rand_dataset_df.to_csv(const.dataset_path, index=False)
 
     def add_label_col(self, row):
-        features_summ = row[const.traffic_col] * const.traffic_importance
-        features_summ += row[const.size_col] * const.size_importance
-        features_summ += row[const.class_col] * const.class_importance
-        features_summ += row[const.popularity_col] * const.popularity_importance
-        features_summ += row[const.occupancy_col] * const.occupancy_importance
-        features_summ += row[const.sockets_col] * const.sockets_importance
-
-        if features_summ < 30:
-            row[const.labels_col] = const.five_min_class
-        elif features_summ < 60:
-            row[const.labels_col] = const.fiveteen_min_class
-        elif features_summ < 80:
-            row[const.labels_col] = const.thirty_min_class
-        else:
-            row[const.labels_col] = const.hour_min_class
+        features_summ = 0
+        for i, col in enumerate(const.dataset_header):
+            features_summ += row[col] * const.feature_weight[i]
+        row['labels'] = (features_summ * random.randint(5, 15)/10)/100
         return row
 
-    def generate_dataset_labels(self, dataset_path):
-        self.rand_dataset_df = pd.read_csv(dataset_path)
+    def generate_dataset_labels(self):
+        self.rand_dataset_df = pd.read_csv(const.dataset_path)
         self.rand_dataset_df = self.rand_dataset_df.apply(self.add_label_col, axis=1)
-        self.rand_dataset_df.to_csv(dataset_path, index=False)
+        self.rand_dataset_df['labels'].to_csv(const.labels_path, index=False)
