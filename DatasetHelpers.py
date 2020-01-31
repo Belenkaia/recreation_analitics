@@ -45,7 +45,7 @@ class DatasetHelper:
                 return self.schedule.get_random_class(room['id'])
         return None
 
-    def generate_random_dataset(self):
+    def generate_random_dataset(self, out_path, data_entries):
         dataset_dict = {}
         dataset_dict[const.traffic_col] = []
         dataset_dict[const.class_col] = []
@@ -54,7 +54,6 @@ class DatasetHelper:
         dataset_dict[const.popularity_col] = []
         dataset_dict[const.occupancy_col] = []
 
-        data_entries = 1000
         # Generate random dataset
         random.seed(datetime.now().microsecond)
         near_time_delta = timedelta(minutes=25)
@@ -77,7 +76,7 @@ class DatasetHelper:
             dataset_dict[const.occupancy_col].append(random.randint(0, int(rand_zone['size'] * 1.5)) / rand_zone['size'])
 
         self.rand_dataset_df = pd.DataFrame(dataset_dict)
-        self.rand_dataset_df.to_csv(r'C:\Users\user\Desktop\recreation_analitics\dataset.csv', index=False)
+        self.rand_dataset_df.to_csv(out_path, index=False)
 
 
     def add_label_col(self, row):
@@ -89,17 +88,16 @@ class DatasetHelper:
         features_summ += row[const.sockets_col] * const.sockets_importance
 
         if features_summ < 30:
-            row['label'] = const.five_min_class
+            row[const.labels_col] = const.five_min_class
         elif features_summ < 60:
-            row['label'] = const.fiveteen_min_class
+            row[const.labels_col] = const.fiveteen_min_class
         elif features_summ < 80:
-            row['label'] = const.thirty_min_class
+            row[const.labels_col] = const.thirty_min_class
         else:
-            row['label'] = const.hour_min_class
+            row[const.labels_col] = const.hour_min_class
         return row
 
-    def generate_dataset_labels(self):
-        self.rand_dataset_df = pd.read_csv(r'C:\Users\user\Desktop\recreation_analitics\dataset.csv')
+    def generate_dataset_labels(self, dataset_path):
+        self.rand_dataset_df = pd.read_csv(dataset_path)
         self.rand_dataset_df = self.rand_dataset_df.apply(self.add_label_col, axis=1)
-        del self.rand_dataset_df['summ']
-        self.rand_dataset_df.to_csv(r'C:\Users\user\Desktop\recreation_analitics\dataset.csv', index=False)
+        self.rand_dataset_df.to_csv(dataset_path, index=False)
