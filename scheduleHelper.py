@@ -2,11 +2,12 @@ import json
 from datetime import datetime, timedelta
 import pytz
 import math
+from model_constants import const
 
 
 class ScheduleHelper:
     def __init__(self):
-        with open("current_schedule.json") as data:
+        with open(const.schedule_file) as data:
             self.schedule_dict = json.load(data)
             data.close()
         # convert strings to time

@@ -1,3 +1,6 @@
+import os
+import pathlib
+
 class constants:
     def __init__(self):
         self.traffic_col = 'traffic'
@@ -20,11 +23,12 @@ class constants:
         self.feature_weight = [self.traffic_importance, self.class_importance, self.size_importance, self.sockets_importance, self.popularity_importance,
                                self.occupancy_importance, self.power_occupancy_importance]
 
-        self.map_table_file = r'C:\Users\user\Desktop\recreation_analitics\data_files\mapTable.tsv'
-        self.dataset_path = r'C:\Users\user\Desktop\recreation_analitics\data_files\dataset.csv'
-        self.labels_path = r'C:\Users\user\Desktop\recreation_analitics\data_files\dataset_labels.csv'
-        self.model_path = r'C:\Users\user\Desktop\recreation_analitics\data_files\prediction_model.cbm'
-
+        self.data_files_folder = os.path.join(pathlib.Path(__file__).parent.absolute(), 'data_files')
+        self.map_table_file = os.path.join(self.data_files_folder, 'mapTable.tsv')
+        self.dataset_path = os.path.join(self.data_files_folder, 'dataset.csv')
+        self.labels_path = os.path.join(self.data_files_folder, 'dataset_labels.csv')
+        self.model_path = os.path.join(self.data_files_folder, 'prediction_model.cbm')
+        self.schedule_file = os.path.join(self.data_files_folder, 'current_schedule.json')
         self.catboost_params = {
             'iterations': 250,
             'depth': 6,
