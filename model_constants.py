@@ -6,6 +6,7 @@ class constants:
         self.sockets_col = 'sockets_size'
         self.popularity_col = 'popularity'
         self.occupancy_col = 'currentOccupancy'
+        self.labels_col = 'label'
 
         self.traffic_importance = 3.0
         self.class_importance = 5.0
@@ -20,6 +21,18 @@ class constants:
         self.hour_min_class = 4
 
         self.dataset_path = r'C:\Users\user\Desktop\recreation_analitics\dataset.csv'
+        self.test_path = r'C:\Users\user\Desktop\recreation_analitics\test_dataset.csv'
         self.model_path = r'C:\Users\user\Desktop\recreation_analitics\prediction_model.cbm'
+
+        self.catboost_params = {
+            'iterations': 20,
+            'learning_rate': 1,
+            'depth': 4,
+            'loss_function': 'MultiClass'
+        }
+        self.crossvalidation_params = self.catboost_params
+        self.crossvalidation_params['loss_function'] = 'Logloss'
+        self.crossvalidation_params['roc_file'] = 'roc-file'
+
 
 const = constants()
