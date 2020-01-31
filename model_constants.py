@@ -25,10 +25,16 @@ class constants:
 
         self.data_files_folder = os.path.join(pathlib.Path(__file__).parent.absolute(), 'data_files')
         self.map_table_file = os.path.join(self.data_files_folder, 'mapTable.tsv')
+
         self.dataset_path = os.path.join(self.data_files_folder, 'dataset.csv')
         self.labels_path = os.path.join(self.data_files_folder, 'dataset_labels.csv')
+        self.test_dataset_path = os.path.join(self.data_files_folder, 'test_dataset.csv')
+        self.test_labels_path = os.path.join(self.data_files_folder, 'test_dataset_labels.csv')
+
         self.model_path = os.path.join(self.data_files_folder, 'prediction_model.cbm')
         self.schedule_file = os.path.join(self.data_files_folder, 'current_schedule.json')
+        self.daily_dataset_file = os.path.join(self.data_files_folder, 'current_schedule.json')
+
         self.catboost_params = {
             'iterations': 250,
             'depth': 6,

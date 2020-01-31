@@ -47,6 +47,9 @@ class ScheduleHelper:
         return count
 
     def is_occupied(self, classroom_id, check_time):
+        classroom_id = str(classroom_id)
+        if classroom_id not in self.schedule_dict:
+            return False
         weekday = str(self.get_current_weekday(check_time))
         classes = self.schedule_dict[classroom_id][weekday]
         for class_num in classes:

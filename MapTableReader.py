@@ -36,6 +36,3 @@ def get_map_dictionary():
         except KeyError as err:
             print(err)
     return map_dict
-
-
-def
