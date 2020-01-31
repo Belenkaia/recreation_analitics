@@ -1,11 +1,13 @@
-from GenerateModel import PredictionModel
-from DatasetHelpers import DatasetHelper
-from model_constants import const
+import tornado.ioloop
+import tornado.web
+from predictionHandler import PredictionHandler
 
+def make_app():
+    return tornado.web.Application([
+        (r"/get_occupied_prediction", PredictionHandler),
+    ])
 
-dataset = DatasetHelper()
-# dataset.generate_random_dataset(250)
-dataset.generate_dataset_labels()
-
-# model = PredictionModel(const.model_path)
-# model.crossvalidate_dataset(const.dataset_path)
+if __name__ == "__main__":
+    app = make_app()
+    app.listen(6543)
+    tornado.ioloop.IOLoop.current().start()

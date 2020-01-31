@@ -2,7 +2,6 @@ import json
 from datetime import datetime, timedelta
 import pytz
 import math
-import random
 
 
 class ScheduleHelper:
@@ -45,17 +44,6 @@ class ScheduleHelper:
         for day in range(1, 14):
             count += len(self.schedule_dict[classroom_id][str(day)])
         return count
-
-    def get_random_class(self, classroom_id):
-        possible_days = []
-        for day in range(1, 14):
-            if len(self.schedule_dict[classroom_id][str(day)]) > 0:
-                possible_days.append(day)
-
-        rand_day = str(possible_days[random.randint(0, len(possible_days)-1)])
-        possible_classes = self.schedule_dict[classroom_id][rand_day]
-        rand_class = possible_classes[random.randint(0, len(possible_classes)-1)]
-        return self.start_times[int(rand_class) - 1] + self.classes_length / 2
 
     def is_occupied(self, classroom_id, check_time):
         weekday = str(self.get_current_weekday(check_time))

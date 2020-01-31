@@ -30,7 +30,8 @@ hs_err_pid*
 # catboost model files
 *.cbm
 
-__pycache__/*
+__pycache__/
 catboost_info/
 crossentropy/
 venv/
+data_files/

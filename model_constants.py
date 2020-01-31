@@ -20,9 +20,10 @@ class constants:
         self.feature_weight = [self.traffic_importance, self.class_importance, self.size_importance, self.sockets_importance, self.popularity_importance,
                                self.occupancy_importance, self.power_occupancy_importance]
 
-        self.dataset_path = r'C:\Users\user\Desktop\recreation_analitics\dataset.csv'
-        self.labels_path = r'C:\Users\user\Desktop\recreation_analitics\dataset_labels.csv'
-        self.model_path = r'C:\Users\user\Desktop\recreation_analitics\prediction_model.cbm'
+        self.map_table_file = r'C:\Users\user\Desktop\recreation_analitics\data_files\mapTable.tsv'
+        self.dataset_path = r'C:\Users\user\Desktop\recreation_analitics\data_files\dataset.csv'
+        self.labels_path = r'C:\Users\user\Desktop\recreation_analitics\data_files\dataset_labels.csv'
+        self.model_path = r'C:\Users\user\Desktop\recreation_analitics\data_files\prediction_model.cbm'
 
         self.catboost_params = {
             'iterations': 250,
