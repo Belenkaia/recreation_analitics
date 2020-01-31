@@ -8,10 +8,10 @@ class PredictionModel():
         if model_path == None:
             self.model_path = const.model_path
             self.generate_new_model()
-        # else:
-        #     self.model_path = model_path
-        #     self.model = self.get_empty_model()
-        #     self.model.load_model(model_path)
+        else:
+            self.model_path = model_path
+            self.model = self.get_empty_model()
+            self.model.load_model(model_path)
 
     def get_empty_model(self):
         return CatBoostClassifier(**const.catboost_params)
@@ -26,10 +26,9 @@ class PredictionModel():
         model.fit(train_dataset)
         model.save_model(self.model_path)
 
-    def crossvalidate_dataset(self, train_file_path):
-        train_df = pd.read_csv(train_file_path)
-        labels_series = train_df[const.labels_col]
-        del train_df[const.labels_col]
+    def crossvalidate_dataset(self):
+        train_df = pd.read_csv(const.dataset_path)
+        labels_series = pd.read_csv(const.labels_path, header=None)
 
         cv_dataset = Pool(train_df, labels_series)
         scores_df = cv(cv_dataset,

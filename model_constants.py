@@ -25,14 +25,11 @@ class constants:
         self.model_path = r'C:\Users\user\Desktop\recreation_analitics\prediction_model.cbm'
 
         self.catboost_params = {
-            'iterations': 20,
-            'learning_rate': 1,
-            'depth': 4,
-            'loss_function': 'MultiClass'
+            'iterations': 250,
+            'depth': 6,
+            'loss_function': 'RMSE'
         }
         self.crossvalidation_params = self.catboost_params
-        self.crossvalidation_params['loss_function'] = 'Logloss'
-        self.crossvalidation_params['roc_file'] = 'roc-file'
 
 
 const = constants()
