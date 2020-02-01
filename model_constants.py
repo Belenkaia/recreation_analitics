@@ -30,6 +30,7 @@ class constants:
         self.labels_path = os.path.join(self.data_files_folder, 'dataset_labels.csv')
         self.test_dataset_path = os.path.join(self.data_files_folder, 'test_dataset.csv')
         self.test_labels_path = os.path.join(self.data_files_folder, 'test_dataset_labels.csv')
+        self.fbprophet_dataset_path = os.path.join(self.data_files_folder, 'fb_random_dataset.csv')
 
         self.model_path = os.path.join(self.data_files_folder, 'prediction_model.cbm')
         self.schedule_file = os.path.join(self.data_files_folder, 'current_schedule.json')
