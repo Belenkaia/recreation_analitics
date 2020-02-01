@@ -1,26 +1,12 @@
-import random
-from datetime import datetime, timedelta
-from scheduleHelper import ScheduleHelper
-from MapTableReader import get_map_dictionary
 import pandas as pd
+from datetime import timedelta
+from scheduleHelper import ScheduleHelper
 from model_constants import const
 
 
 class DatasetHelper:
     def __init__(self):
         self.schedule = ScheduleHelper()
-        raw_map_dict = get_map_dictionary()
-        # filter zones with no classes
-        self.map_list = []
-        for key in raw_map_dict:
-            if self.check_zone(raw_map_dict[key]):
-                self.map_list.append(raw_map_dict[key])
-
-    def check_zone(self, zone):
-        for room in zone['classrooms']:
-            if self.schedule.get_classes_count(room['id']) > 0:
-                return True
-        return False
 
     def Calculate_coefficient(self, current_time, classrooms_objets, near_time_delta):
         classrooms_coeff = 1
@@ -30,59 +16,45 @@ class DatasetHelper:
                 classrooms_coeff *= (1 + 1 / distance)
         return classrooms_coeff
 
-    def get_random_date(self):
-        time_str = str(random.randint(1, 28)) + ' ' + str(random.randint(1, 12)) + ' 2020 +0700 '
-        time_str += str(random.randint(9, 22)) + ':' + str(random.randint(0, 59))
-        return datetime.strptime(time_str, '%d %m %Y %z %H:%M')
-
-    def get_random_zone(self):
-        return self.map_list[random.randint(0, len(self.map_list) - 1)]
-
-    # None - zone don't have enough classes
-    def get_random_class_time(self, rand_zone):
-        for room in rand_zone['classrooms']:
-            if self.schedule.get_classes_count(room['id']) > 0:
-                return self.schedule.get_random_class(room['id'])
-        return None
-
-    def generate_random_dataset(self, data_entries):
+    def get_zones_dataset_dict(self, zones_list):
         dataset_dict = {}
         for col in const.dataset_header:
             dataset_dict[col] = []
+        for zone in zones_list:
+            dataset_dict[const.traffic_col].append(zone[const.traffic_col])
+            time_nsu = self.schedule.get_nsu_time()
+            dataset_dict[const.class_col].append(self.Calculate_coefficient(time_nsu, zone['classrooms'], timedelta(minutes=30)))
+            dataset_dict[const.size_col].append(zone[const.size_col])
+            dataset_dict[const.sockets_col].append(zone['powerSockets'])
+            dataset_dict[const.popularity_col].append(zone[const.popularity_col])
+            dataset_dict[const.occupancy_col].append(zone['OccupiedSize'] / zone[const.size_col])
+            dataset_dict[const.power_occupancy_col].append(zone['occupiedPowerSockets'] / zone['powerSockets'])
+        return dataset_dict
 
-        # Generate random dataset
-        random.seed(datetime.now().microsecond)
-        near_time_delta = timedelta(minutes=25)
-        for i in range(data_entries):
-            is_data_good = False
-            rand_zone = self.get_random_zone()
-            entry_time = None
-            while not is_data_good:
-                entry_time = self.get_random_class_time(rand_zone)
-                if entry_time == None:
-                    rand_zone = self.get_random_zone()
-                else:
-                    is_data_good = True
+    def get_features_df(self, zones_list):
+        dataset_dict = self.get_zones_dataset_dict(zones_list)
+        for i in range(0, len(zones_list[const.class_col])):
+            zone = zones_list[i]
+            time_delta = timedelta(minutes=zone['delta_time'])
+            time_nsu = self.schedule.get_nsu_time() + time_delta
+            dataset_dict[const.class_col][i] = self.Calculate_coefficient(time_nsu, zone['classrooms'], timedelta(minutes=30))
+        return pd.DataFrame(data=dataset_dict)
 
-            dataset_dict[const.traffic_col].append(rand_zone['traffic'])
-            dataset_dict[const.size_col].append(rand_zone['size'])
-            dataset_dict[const.sockets_col].append(rand_zone['powerSockets'])
-            dataset_dict[const.popularity_col].append(rand_zone['popularity'])
-            dataset_dict[const.class_col].append(self.Calculate_coefficient(entry_time, rand_zone['classrooms'], near_time_delta))
-            dataset_dict[const.occupancy_col].append(random.randint(0, int(rand_zone['size'] * 1.5)) / rand_zone['size'])
-            dataset_dict[const.power_occupancy_col].append(random.randint(0, rand_zone['powerSockets']))
+    def add_new_data(self, zones_list, is_training_dataset):
+        dataset_dict = self.get_zones_dataset_dict(zones_list=zones_list)
+        new_dataset_df = pd.DataFrame(data=dataset_dict)
 
-        self.rand_dataset_df = pd.DataFrame(dataset_dict)
-        self.rand_dataset_df.to_csv(const.dataset_path, index=False)
+        dataset_path = const.dataset_path
+        if not is_training_dataset:
+            dataset_path = const.test_dataset_path
+        labels_path = const.labels_path
+        if not is_training_dataset:
+            labels_path = const.test_labels_path
 
-    def add_label_col(self, row):
-        features_summ = 0
-        for i, col in enumerate(const.dataset_header):
-            features_summ += row[col] * const.feature_weight[i]
-        row['labels'] = (features_summ * random.randint(5, 15)/10)/100
-        return row
-
-    def generate_dataset_labels(self):
-        self.rand_dataset_df = pd.read_csv(const.dataset_path)
-        self.rand_dataset_df = self.rand_dataset_df.apply(self.add_label_col, axis=1)
-        self.rand_dataset_df['labels'].to_csv(const.labels_path, index=False)
+        old_dataset_df = pd.read_csv(dataset_path)
+        old_dataset_df = old_dataset_df.append(new_dataset_df)
+        old_dataset_df.to_csv(dataset_path, index=False)
+        labels_list = []
+        for zone in zones_list:
+            labels_list.append(zone['OccupiedSize'])
+        pd.Series(data=labels_list).to_csv(labels_path)

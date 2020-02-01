@@ -1,4 +1,5 @@
 import pandas as pd
+from model_constants import const
 
 
 def get_map_dictionary():
@@ -10,7 +11,7 @@ def get_map_dictionary():
     classrooms = 'Аудитории'
     classroom_distances = 'Дистанция до аудитории'
     popularity = 'популярность'
-    map_df = pd.read_csv('mapTable.tsv', sep='\t')
+    map_df = pd.read_csv(const.map_table_file, sep='\t')
 
     map_df[table_space_amount] = map_df[table_space_amount].fillna(0)
     map_df[power_sockets_amount] = map_df[power_sockets_amount].fillna(0)
