@@ -28,15 +28,16 @@ class ProphetModel():
     def get_predictions(self, zones_list):
         predictions = []
         for zone in zones_list:
-            model = self.load_model(zone['zone_id'])
+            model = self.load_model(zone['zoneid'])
             future_dict = {
                 'ds': [zone['predict_time']]
             }
             forecast = model.predict(pd.DataFrame(data=future_dict))
             predictions.append({
-                'zone_id': zone['zone_id'],
+                'zone_id': zone['zoneid'],
                 'predicted_people_count': math.floor(forecast['yhat'][0]),
-                'prediction_probability': forecast['yhat_lower'][0]/forecast['yhat_upper'][0]
+                'prediction_probability': 0
             })
         self.dataset.update_dataset_df(zones_list)
         return predictions
+    

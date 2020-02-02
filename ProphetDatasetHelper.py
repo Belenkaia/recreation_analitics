@@ -15,7 +15,7 @@ class ProphetDatasetHelper():
 
     def update_dataset_df(self, zones_list):
         for zone in zones_list:
-            zone_dataset_path = self.get_zone_dataset_path(zone['zone_id'])
+            zone_dataset_path = self.get_zone_dataset_path(zone['zoneid'])
             dataset_df = pd.read_csv(zone_dataset_path)
             new_dict = {
                 'ds': [zone['curr_timestamp']],
